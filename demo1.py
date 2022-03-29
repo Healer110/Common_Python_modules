@@ -1,49 +1,86 @@
 import sys
-from PyQt5.QtWidgets import (QWidget, QHBoxLayout, QFrame,
-                             QSplitter, QApplication)
-from PyQt5.QtCore import Qt
-
-'''
-QFrame是一个基类，可以选择直接使用；主要用来控制一些边框样式
-QSplitter使用户可以通过拖动子面板的边界控制子面板的大小,QSplitter实际也是一个面板
-QFrame 控件添加StyledPanel样式能使QFrame 控件之间的界限更加明显
-'''
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 
 
-class Example(QWidget):
+class StackedExample(QWidget):
     def __init__(self):
-        super().__init__()
-        self.initUI()
+        super(StackedExample, self).__init__()
 
-    def initUI(self):
-        hbox = QHBoxLayout(self)
 
-        topleft = QFrame(self)
-        topleft.setFrameShape(QFrame.StyledPanel)
+        self.setWindowTitle("选堆栈窗口控件:QStackedWidget")
+        self.resize(500, 400)
 
-        topright = QFrame(self)
-        topright.setFrameShape(QFrame.StyledPanel)
+        # 创建一个列表控件
+        self.list = QListWidget()
+        self.list.insertItem(0, "联系方式")
+        self.list.insertItem(1, "个人信息")
+        self.list.insertItem(2, "教育程度")
 
-        bottom = QFrame(self)
-        bottom.setFrameShape(QFrame.StyledPanel)
+        # 创建三个QWidget类型的子页面
+        self.stack1 = QWidget()
+        self.stack2 = QWidget()
+        self.stack3 = QWidget()
 
-        splitter1 = QSplitter(Qt.Horizontal)
-        splitter1.addWidget(topleft)
-        splitter1.addWidget(topright)
+        # 创建一个堆栈窗口控件，并将三个子页面装载进入其中
+        self.stack = QStackedWidget()
+        self.stack.addWidget(self.stack1)
+        self.stack.addWidget(self.stack2)
+        self.stack.addWidget(self.stack3)
 
-        splitter2 = QSplitter(Qt.Vertical)
-        splitter2.addWidget(splitter1)
-        splitter2.addWidget(bottom)
+        # 调用封装好的、用来为子页面添加控件的函数
+        self.tab1UI()
+        self.tab2UI()
+        self.tab3UI()
 
-        hbox.addWidget(splitter2)
-        self.setLayout(hbox)
+        layout = QHBoxLayout()
+        layout.addWidget(self.list)
+        layout.addWidget(self.stack)
+        self.setLayout(layout)
 
-        self.setGeometry(300, 300, 300, 200)
-        self.setWindowTitle('QSplitter')
-        self.show()
+        self.list.currentRowChanged.connect(self.display)
+
+
+
+    def tab1UI(self):
+        layout = QFormLayout()
+        layout.addRow("姓名", QLineEdit())
+        layout.addRow("地址", QLineEdit())
+
+
+        self.stack1.setLayout(layout)
+
+
+    def tab2UI(self):
+        layout = QFormLayout()
+        sex = QHBoxLayout()
+        sex.addWidget(QRadioButton('男'))
+        sex.addWidget(QRadioButton('女'))
+        layout.addRow("性别", sex)
+        layout.addRow("生日", QLineEdit())
+
+
+        self.stack2.setLayout(layout)
+
+
+    def tab3UI(self):
+        layout = QHBoxLayout()
+        layout.addWidget(QLabel("科目"))
+        layout.addWidget(QCheckBox("物理"))
+        layout.addWidget(QCheckBox("高数"))
+
+
+        self.stack3.setLayout(layout)
+
+
+    def display(self, index):
+        # 根据index，堆栈窗口控件会切换到相应序号的页面
+        self.stack.setCurrentIndex(index)
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Example()
+    main = StackedExample()
+    main.show()
     sys.exit(app.exec_())
