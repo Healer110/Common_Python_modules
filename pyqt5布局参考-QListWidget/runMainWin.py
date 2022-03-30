@@ -8,7 +8,9 @@ import pyqtgraph as pg
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QSize
 from PyQt5.QtCore import QThread
-from PyQt5.QtWidgets import QMainWindow, QApplication, QListWidgetItem, QLabel, QWidget, QHBoxLayout, QListWidget
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QMainWindow, QApplication, QListWidgetItem, QLabel, QWidget, QHBoxLayout, QListWidget, \
+    QStyleOptionTitleBar
 from qt_material import apply_stylesheet
 import qdarkstyle
 from layout_demo import Ui_MainWindow
@@ -18,24 +20,28 @@ class Window(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(Window, self).__init__()
         self.setupUi(self)
-
-
         self.left_list.currentRowChanged.connect(self.display_stack_window)
+        title_label = QLabel()
+        title_label.setAlignment(Qt.AlignCenter)
+        title_label.setStyleSheet("{background-color: rgb(255, 255, 255);space: 0px; margin: 0px}")
+        qpimap = QPixmap('../icons/signal.png')
+        qpimap.scaled(40, 40, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        title_label.setPixmap(qpimap)
+        self.dockWidget_2.setTitleBarWidget(title_label)
+        tmp = self.dockWidget_2.titleBarWidget()
+        # print(tmp)
+        tmp.setMinimumHeight(30)
         # self.initUI()
+        # self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 
         pass
-
 
     # 通过QListWidget导航栏切换item来控制stackWidget页面
     def display_stack_window(self, index):
         self.stackedWidget.setCurrentIndex(index)
 
-
-
-
     def initUI(self):
         self.setGeometry(300, 300, 600, 620)
-
 
 
 if __name__ == '__main__':
@@ -53,17 +59,3 @@ if __name__ == '__main__':
     sys.exit(app.exec_())
     # aa = np.linspace(-2*np.pi, 2*np.pi, 500)
     # print(aa[0])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
