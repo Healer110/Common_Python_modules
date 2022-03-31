@@ -59,6 +59,7 @@ if __name__ == '__main__':
     # apply_stylesheet(app, theme='dark_teal.xml')
     # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
 
+
     main_win.show()
     sys.exit(app.exec_())
     # aa = np.linspace(-2*np.pi, 2*np.pi, 500)
