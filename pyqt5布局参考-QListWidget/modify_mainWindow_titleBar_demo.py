@@ -346,7 +346,6 @@ class FramelessWindow(QWidget):
 
 
 
-
 try:
     from PyQt5.QtGui import QIcon
     from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QTextEdit, QApplication

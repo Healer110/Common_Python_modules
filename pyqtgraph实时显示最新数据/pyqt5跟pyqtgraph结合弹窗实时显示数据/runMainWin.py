@@ -77,7 +77,7 @@ class Test(QMainWindow, Ui_MainWindow):
     def Plot(self, list, list1):
         self.tt = np.array(list)
         self.plot_plt.plot().setData(list1[len(list1)-2:],list[len(list)-2:],pen='g',symbol='o')
-        self.plot_plt_2.plot().setData(list1[len(list1)-2:],list[len(list)-2:],pen='g',symbol='star')
+        self.plot_plt_2.plot().setData(list1[len(list1)-2:],list[len(list)-2:],pen='r',symbol='star')
         # self.plot_plt.plot(clear=True).setData(list1[len(list1) - 2:], list[len(list) - 2:], pen='g', symbol='o')
 
 

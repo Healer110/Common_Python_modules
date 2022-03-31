@@ -1,13 +1,6 @@
 import sys
-import time
-import threading
 
-import numpy as np
-import psutil
-import pyqtgraph as pg
-from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QSize
-from PyQt5.QtCore import QThread
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QApplication, QListWidgetItem, QLabel, QWidget, QHBoxLayout, QListWidget, \
     QStyleOptionTitleBar
@@ -20,22 +13,32 @@ class Window(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(Window, self).__init__()
         self.setupUi(self)
+        self.reset_dock_title_bar()     # 重置dockWidget标题栏
         self.left_list.currentRowChanged.connect(self.display_stack_window)
+
+        # tmp.setFixedHeight(20)
+        # self.initUI()
+        # self.setWindowFlags(Qt.FramelessWindowHint)
+        # self.setWindowFlags(Qt.CustomizeWindowHint)
+        pass
+
+    # 重置QDockWidget标题栏，放一张图片上去，并将QLabel背景色设置为白色
+    def reset_dock_title_bar(self):
         title_label = QLabel()
-        title_label.setAlignment(Qt.AlignCenter)
-        title_label.setStyleSheet("QLabel{background-color: rgb(255, 255, 255);space: 0px; margin: 0px}")
-        qpimap = QPixmap('../icons/signal.png')
-        qpimap.scaled(40, 40, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        title_label.setObjectName('dock_title_label')
+        title_label.setAlignment(Qt.AlignCenter)    # 设置QLabel内容居中显示
+        title_label.setStyleSheet("QLabel{background-color: rgb(255, 255, 255);space: 0px; margin: 0px;}")
+        qpimap = QPixmap('../icons/signal.png')     # 加载图片
+        qpimap.scaled(30, 30, Qt.KeepAspectRatio, Qt.SmoothTransformation)  # 设置图片大小并按比例伸缩
+        # qpimap.scaled(title_label.size(), Qt.KeepAspectRatio)     # 另外一种设置图片按照比例缩放的方法
+        # title_label.setScaledContents(True)       # 可以使图片根据QLabel的大小进行填充
         title_label.setPixmap(qpimap)
         self.dockWidget_2.setTitleBarWidget(title_label)
         tmp = self.dockWidget_2.titleBarWidget()
         # print(tmp)
-        tmp.setMinimumHeight(40)
-        # tmp.setFixedHeight(20)
-        # self.initUI()
-        # self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        tmp.setMinimumHeight(30)
+        # tmp.setFixedHeight(10)
 
-        pass
 
     # 通过QListWidget导航栏切换item来控制stackWidget页面
     def display_stack_window(self, index):
