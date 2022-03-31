@@ -15,7 +15,7 @@ try:
     from PyQt5.QtCore import Qt, pyqtSignal, QPoint
     from PyQt5.QtGui import QFont, QEnterEvent, QPainter, QColor, QPen
     from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, \
-    QSpacerItem, QSizePolicy, QPushButton, QListWidget
+    QSpacerItem, QSizePolicy, QPushButton, QListWidget, QDesktopWidget
 except ImportError:
     from PySide2.QtCore import Qt, Signal as pyqtSignal, QPoint
     from PySide2.QtGui import QFont, QEnterEvent, QPainter, QColor, QPen
@@ -192,8 +192,13 @@ class FramelessWindow(QWidget):
         self._widget.installEventFilter(self)
         self.layout().addWidget(self._widget)
 
+
     def move(self, pos):
+        # print(pos)
         if self.windowState() == Qt.WindowMaximized or self.windowState() == Qt.WindowFullScreen:
+
+            # self.showNormal()
+            # super(FramelessWindow, self).move(pos)
             # 最大化或者全屏则不允许移动
             return
         super(FramelessWindow, self).move(pos)
