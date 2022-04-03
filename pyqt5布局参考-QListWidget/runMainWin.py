@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QSize
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QPalette, QBrush
 from PyQt5.QtWidgets import QMainWindow, QApplication, QListWidgetItem, QLabel, QWidget, QHBoxLayout, QListWidget, \
     QStyleOptionTitleBar
 from qt_material import apply_stylesheet
@@ -14,6 +14,7 @@ class Window(QMainWindow, Ui_MainWindow):
         super(Window, self).__init__()
         self.setupUi(self)
         self.reset_dock_title_bar()     # 重置dockWidget标题栏
+        # self.set_palette()  # 设置背景
         self.left_list.currentRowChanged.connect(self.display_stack_window)
 
         # tmp.setFixedHeight(20)
@@ -38,6 +39,17 @@ class Window(QMainWindow, Ui_MainWindow):
         # print(tmp)
         tmp.setMinimumHeight(30)
         # tmp.setFixedHeight(10)
+
+    # 设置背景
+    def set_palette(self):
+        # 不设置也可以
+        self.setAutoFillBackground(True)
+        palette = QPalette()
+        # 设置背景颜色
+        # palette.setColor(self.backgroundRole(), QColor(192, 253, 123))
+        # 设置背景图片
+        palette.setBrush(self.backgroundRole(), QBrush(QPixmap('../icons/winBack.jpeg')))
+        self.setPalette(palette)
 
 
     # 通过QListWidget导航栏切换item来控制stackWidget页面
