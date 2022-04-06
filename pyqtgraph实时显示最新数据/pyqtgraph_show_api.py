@@ -1,72 +1,88 @@
 import sys
-import time
-import threading
+
 
 import numpy as np
 import psutil
 import pyqtgraph as pg
-from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
-from PyQt5.QtCore import QThread
-from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QVBoxLayout, QPushButton, QDialog, QHBoxLayout, \
-    QGridLayout
-from qt_material import apply_stylesheet
-from test_result_show_timely import My_Dialog, draw_data_timely
-
-from test import Ui_MainWindow
+from PyQt5.QtWidgets import QApplication, QDialog, QGridLayout
 
 
-class Test(QMainWindow, Ui_MainWindow):
-    def __init__(self):
-        super(Test, self).__init__()
-        # 启动界面，所有需要在init进行初始化的函数跟事件，都要在初始化之后进行
-        self.setupUi(self)
+'''
+调用该API时，将主窗口对象传递进来即可，需要其他功能，再自定义修改即可
+'''
 
-        self.start_btn.clicked.connect(self.show_widget)
-        # self.start_btn.clicked.connect(self.thread_run)
+# 自定义QDialog组件，去掉问号按钮并增加最大化最小化按钮
+class My_Dialog(QDialog):
+    def __init__(self, parent=None):
+        super(My_Dialog, self).__init__(parent)
+        self.setupUi()
+
+    def setupUi(self):
+        # self.setWindowFlags(Qt.FramelessWindowHint)  # 去除边框
+        self.setWindowFlags(Qt.Dialog | Qt.WindowMinMaxButtonsHint | Qt.WindowCloseButtonHint)  # 最大化最小化关闭按钮
+        pass
 
 
+# 实时显示测试数据接口
+class realTimeDisplay(My_Dialog):
+    # real_time_trig_of_api = pyqtSignal(int, list, list)
+    def __init__(self, parent=None):
+        '''
+        实时显示数据初始化，需要将调用该程序的主窗口对象传递进来
+        :param parent: 父窗口对象
+        '''
+        super(realTimeDisplay, self).__init__(parent)
+
+        # self.show_widget()        # 初始化调用绘图窗口，这里先不自动调用，主程序实例化该对象后，自己调用即可，单独执行该程序时打开
+
+    # 编辑一个QDialog对话框，用来实时显示测试数据
     def show_widget(self):
-        self.dialog = My_Dialog(self)
-        self.dialog.setMouseTracking(True)
-        self.dialog.setWindowTitle('Show data')
+        '''
+        在pyqt5主界面调用pyqtgraph进行绘图，基本的思路是，先创建一个QDialog窗口，该窗口的父窗口就是主窗口。
+        然后pyqtgraph绘图部件的主窗口为QDialog，这样就可以在pyqt5主程序中进行调用了。
+        关系：
+        main_windows ---->realTimeDisplay(main_windows)---->My_Dialog(realTimeDisplay)
+        :return:
+        '''
+        self.setWindowModality(Qt.NonModal)                                     # 设置非模态对话框
+        self.setMouseTracking(True)                                             # 设置组件可以对鼠标进行追踪
+        self.setWindowTitle('Real-time display')                                # 设置窗口标题
         # self.dialog.resize(200, 200)
-        self.plot_layout = QGridLayout()  # 实例化一个网格布局层
-        self.plot_layout.setSpacing(0)
-        self.plot_layout.setContentsMargins(0, 0, 0, 0)
-        self.dialog.setLayout(self.plot_layout)  # 设置K线图部件的布局层
-        # self.plot_plt = pg.PlotWidget()  # 实例化一个绘图部件
-        self.win = pg.GraphicsLayoutWidget(show=True)  # 实例化一个绘图部件
-        self.label = pg.LabelItem(justify='right')  # 添加标签
-        self.win.addItem(self.label)  # 将当前的标签添加到窗口
+        self.plot_layout = QGridLayout()                                        # 实例化一个网格布局层
+        self.plot_layout.setSpacing(0)                                          # 设置网格布局space为0
+        self.plot_layout.setContentsMargins(0, 0, 0, 0)                         # 设置网格布局margin为0
+        self.setLayout(self.plot_layout)                                        # 设置dialog布局为网格布局
+        # self.plot_plt = pg.PlotWidget()                                       # 实例化一个绘图部件
+        self.win = pg.GraphicsLayoutWidget(show=True)                           # 实例化一个绘图部件，创建后立即显示
+        self.label = pg.LabelItem(justify='right')                              # 添加标签
+        self.win.addItem(self.label)                                            # 将当前的标签添加到窗口
         # self.plot_plt = self.win.addPlot(row=1, col=0, title='H-plane')       # 添加title为设置标签
         self.plot_plt = self.win.addPlot(row=1, col=0)
-        self.plot_plt.setLabel('left', 'H-Plane', units='dBm')  # 设置Label
-        self.plot_plt.showGrid(x=True, y=True)  # 显示图形网格
+        self.plot_plt.setLabel('left', 'H-Plane', units='dBm')                  # 设置Label
+        self.plot_plt.showGrid(x=True, y=True)                                  # 显示图形网格
         self.plot_layout.addWidget(self.win)
 
-        self.vLine = pg.InfiniteLine(angle=90, movable=False, )  # 创建一个垂直线条
-        self.hLine = pg.InfiniteLine(angle=0, movable=False, )  # 创建一个水平线条
-        self.plot_plt.addItem(self.vLine, ignoreBounds=True)  # 在图形部件中添加垂直线条
-        self.plot_plt.addItem(self.hLine, ignoreBounds=True)  # 在图形部件中添加水平线条
+        self.vLine = pg.InfiniteLine(angle=90, movable=False, )     # 创建一个垂直线条
+        self.hLine = pg.InfiniteLine(angle=0, movable=False, )      # 创建一个水平线条
+        self.plot_plt.addItem(self.vLine, ignoreBounds=True)        # 在图形部件中添加垂直线条
+        self.plot_plt.addItem(self.hLine, ignoreBounds=True)        # 在图形部件中添加水平线条
 
-        # 测试两张图的场景：
+        # 实例化第二个绘图部件
         self.plot_plt_2 = self.win.addPlot(row=2, col=0)
-        self.plot_plt_2.showGrid(x=True, y=True)  # 显示图形网格
-        self.plot_plt_2.setLabel('left', 'V-Plane', units='dBm')  # 设置Label
-        self.vLine2 = pg.InfiniteLine(angle=90, movable=False, )  # 创建一个垂直线条
-        self.hLine2 = pg.InfiniteLine(angle=0, movable=False, )  # 创建一个水平线条
-        self.plot_plt_2.addItem(self.vLine2, ignoreBounds=True)  # 在图形部件中添加垂直线条
-        self.plot_plt_2.addItem(self.hLine2, ignoreBounds=True)  # 在图形部件中添加水平线条
+        self.plot_plt_2.showGrid(x=True, y=True)                    # 显示图形网格
+        self.plot_plt_2.setLabel('left', 'V-Plane', units='dBm')    # 设置Label
+        self.vLine2 = pg.InfiniteLine(angle=90, movable=False, )    # 创建一个垂直线条
+        self.hLine2 = pg.InfiniteLine(angle=0, movable=False, )     # 创建一个水平线条
+        self.plot_plt_2.addItem(self.vLine2, ignoreBounds=True)     # 在图形部件中添加垂直线条
+        self.plot_plt_2.addItem(self.hLine2, ignoreBounds=True)     # 在图形部件中添加水平线条
 
-        # self.tt = np.linspace(-2 * np.pi, 2 * np.pi, 500)
-        # self.plot_plt.plot(pen='g').setData(np.sin(self.tt))
-        #
+        # 设置鼠标移动的触发，限制速率，移动则触发mouseMoved函数
         self.move_slot = pg.SignalProxy(self.plot_plt.scene().sigMouseMoved, rateLimit=60, slot=self.mouseMoved)
         self.move_slot_2 = pg.SignalProxy(self.plot_plt_2.scene().sigMouseMoved, rateLimit=60, slot=self.mouseMoved2)
 
-        self.dialog.show()
-        self.data_list = []
+        self.show()
+        # self.data_list = []
 
         self.Thread1 = NewThread()
         self.Thread1.trigger.connect(self.Plot)
@@ -83,7 +99,7 @@ class Test(QMainWindow, Ui_MainWindow):
 
 
     def show_widget_bak(self):
-        self.dialog = My_Dialog(self)
+        self.dialog = My_Dialog(self.mainWin)
         self.dialog.setMouseTracking(True)
         # self.dialog.resize(200, 200)
         self.plot_layout = QGridLayout()  # 实例化一个网格布局层
@@ -169,12 +185,9 @@ if __name__ == '__main__':
     # PyQt5高清屏幕自适应设置
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     app = QApplication(sys.argv)
-    main_win = Test()
 
-    # setup stylesheet
-    # apply_stylesheet(app, theme='dark_teal.xml')
+    main_win = realTimeDisplay()
+    main_win.show_widget()
 
-    main_win.show()
+    # main_win.show()
     sys.exit(app.exec_())
-    # aa = np.linspace(-2*np.pi, 2*np.pi, 500)
-    # print(aa[0])

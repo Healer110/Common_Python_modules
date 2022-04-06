@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QSize
 from PyQt5.QtGui import QPixmap, QPalette, QBrush
 from PyQt5.QtWidgets import QMainWindow, QApplication, QListWidgetItem, QLabel, QWidget, QHBoxLayout, QListWidget, \
-    QStyleOptionTitleBar
+    QStyleOptionTitleBar, QStyleFactory
 from qt_material import apply_stylesheet
 import qdarkstyle
 from layout_demo import Ui_MainWindow
@@ -21,6 +21,8 @@ class Window(QMainWindow, Ui_MainWindow):
         # self.initUI()
         # self.setWindowFlags(Qt.FramelessWindowHint)
         # self.setWindowFlags(Qt.CustomizeWindowHint)
+
+        self.changeStyle('windowsvista')        # 默认主题
         pass
 
     # 重置QDockWidget标题栏，放一张图片上去，并将QLabel背景色设置为白色
@@ -56,8 +58,16 @@ class Window(QMainWindow, Ui_MainWindow):
     def display_stack_window(self, index):
         self.stackedWidget.setCurrentIndex(index)
 
-    def initUI(self):
-        self.setGeometry(300, 300, 600, 620)
+    # 设置自带主题
+    def changeStyle(self, styleName):
+        '''
+        支持如下三种
+        ['windowsvista', 'Windows', 'Fusion']
+        :param styleName: 主题名称
+        :return:
+        '''
+        # 改变Style
+        QApplication.setStyle(QStyleFactory.create(styleName))
 
 
 if __name__ == '__main__':
