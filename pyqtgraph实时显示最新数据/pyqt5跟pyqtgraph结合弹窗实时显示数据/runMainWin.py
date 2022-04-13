@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import QMainWindow, QApplication, QGridLayout
 from qt_material import apply_stylesheet
-from pyqtgraph实时显示最新数据.pyqt5跟pyqtgraph结合弹窗实时显示数据.test_result_show_timely import My_Dialog
+from test_result_show_timely import My_Dialog
 
 from test import Ui_MainWindow
 
