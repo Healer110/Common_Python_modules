@@ -1,17 +1,13 @@
 import sys
-import time
-import threading
 
 import numpy as np
 import psutil
 import pyqtgraph as pg
-from PyQt5 import QtCore
-from PyQt5.QtCore import Qt, QThread, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtCore import QThread
-from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QVBoxLayout, QPushButton, QDialog, QHBoxLayout, \
-    QGridLayout
+from PyQt5.QtWidgets import QMainWindow, QApplication, QGridLayout
 from qt_material import apply_stylesheet
-from test_result_show_timely import My_Dialog, draw_data_timely
+from pyqtgraph实时显示最新数据.pyqt5跟pyqtgraph结合弹窗实时显示数据.test_result_show_timely import My_Dialog
 
 from test import Ui_MainWindow
 
@@ -172,7 +168,7 @@ if __name__ == '__main__':
     main_win = Test()
 
     # setup stylesheet
-    # apply_stylesheet(app, theme='dark_teal.xml')
+    apply_stylesheet(app, theme='dark_teal.xml')
 
     main_win.show()
     sys.exit(app.exec_())
